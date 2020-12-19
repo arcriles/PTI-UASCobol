@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Table Provinsi</title>
+    <meta charset="UTF-8">
+
+    <!-- Boostrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Boostrap Js -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+        integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"
+        integrity="sha512-BkpSL20WETFylMrcirBahHfSnY++H2O1W+UnEEO4yNIl+jI2+zowyoGJpbtk6bx97fBXf++WJHSSK2MV4ghPcg=="
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css"
+        integrity="sha512-1k7mWiTNoyx2XtmI96o+hdjP8nn0f3Z2N4oF/9ZZRgijyV4omsKOXEnqL1gKQNPy2MTSP9rIEWGcH/CInulptA=="
+        crossorigin="anonymous" />
+    <!-- Angular JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"
+        integrity="sha512-7oYXeK0OxTFxndh0erL8FsjGvrl2VMDor6fVqzlLGfwOQQqTbYsGPv4ZZ15QHfSk80doyaM0ZJdvkyDcVO7KFA=="
+        crossorigin="anonymous"></script>
+
+</head>
+
+<style>
+    body {
+        background-color: black;
+        color: white;
+    }
+</style>
+
+<body>
+    <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="index.html">COVID.API</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    <br><br><br><br>
+<div ng-app='app' ng-controller="tableAPI">
+    <div style="padding: 10px;">
+        <h1>Update Covid Hari ini</h1>
+
+        <table class="table table-striped table-dark">
+            <thead>
+                <tr>
+                    <th scope="col">Provinsi</th>
+                    <th scope="col">Total Kasus</th>
+                    <th scope="col">Total Sembuh</th>
+                    <th scope="col">Update Sembuh</th>
+                    <th scope="col">Presentasi Kesembuhan</th>
+                    <th scope="col">Total Meninggal</th>
+                    <th scope="col">Update Meninggal</th>
+                    <th scope="col">Presentasi Meninggal</th>
+                    <th scope="col">Keterangan</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat='data in provinsi | orderBy:sort.column:sort.descending'>
+                    <td>{{data.provinsi}}</th>
+                    <td>{{data.kasus}}</td>
+                    <td>{{data.sembuh}}</td>
+                    <td>{{data.penambahan.sembuh}}</td>
+                    <td ng-init='a=(100-((data.sembuh)/(data.sembuh+data.penambahan.sembuh)*100)).toFixed(2)'>
+                        {{a +' %'}}</td>
+                    <td>{{data.meninggal}}</td>
+                    <td>{{data.penambahan.meninggal}}</td>=
+                    <td ng-init='b=(100-((data.meninggal)/(data.meninggal+data.penambahan.meninggal)*100)).toFixed(2)'>
+                        {{b + ' %'}}</td>
+                    <td ng-init='c = (a > b ? "Kesembuhan Lebih Dominan" : "Angka kematian gawat")'>{{c}}</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th scope="col">Provinsi</th>
+                    <th scope="col">Total Kasus</th>
+                    <th scope="col">Total Sembuh</th>
+                    <th scope="col">Update Sembuh</th>
+                    <th scope="col">Presentasi Kesembuhan</th>
+                    <th scope="col">Total Meninggal</th>
+                    <th scope="col">Update Meninggal</th>
+                    <th scope="col">Presentasi Meninggal</th>
+                    <th scope="col">Keterangan</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+</body>
+
+<script>
+    // Fetch Data from API
+
+    var app = angular.module('app', []);
+
+    const baseURL = 'https://apicovid19indonesia-v2.vercel.app/api';
+
+    var dataProvinsi;
+
+    app.controller('tableAPI', function ($scope, $rootScope, $http) {
+        $http.get(baseURL).then(
+            function (result) {
+                console.log(result);
+                console.log(result.data.endpoints[4]);
+                const provinsiURL = result.data.endpoints[4];
+
+                $http.get(provinsiURL).then(
+                    function (provinsi) {
+                        // console.log(provinsi.data);
+                        dataProvinsi = provinsi.data;
+                        console.log(dataProvinsi);
+                        $rootScope.provinsi = dataProvinsi;
+                        $scope.provinsi = dataProvinsi;
+                    },
+                    function (err) {
+                        console.log(err);
+                    }
+                )
+            },
+            function (error) {
+                console.log(error);
+            });
+        // $scope.
+    });
+</script>
+
+</html>

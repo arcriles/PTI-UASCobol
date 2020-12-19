@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+        integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+        crossorigin="anonymous"></script>
+
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"
+        integrity="sha512-hZf9Qhp3rlDJBvAKvmiG+goaaKRZA6LKUO35oK6EsM0/kjPK32Yw7URqrq3Q+Nvbbt8Usss+IekL7CRn83dYmw=="
+        crossorigin="anonymous"></script> -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"
+        integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw=="
+        crossorigin="anonymous"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <!-- <script src="chartLogic.js"></script> -->
+    <title>Chart Testing</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+</head>
+<style>
+    body {
+        background-color: black;
+        /* background-color: rgb(0, 255, 55); */
+        color: white;
+    }
+</style>
+
+<body>
+    <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="index.html">COVID.API</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    <br><br><br><br>
+    <div ng-app="app" ng-controller="tableAPI" class="container w-50 h-50 center">
+        <!-- <p id="num"></p> -->
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+
+        function invokeChart(data){
+            var myChart = new Chart(ctx, {
+                type: 'horizontalBar', // bar, horizontalBar, pie, line, doughnut, radar, polarArea
+                data: {
+                    labels: parserLabel(data),
+                    datasets: [{
+                        label: 'Angka kematian terbanyak di Indonesia',
+                        data: parserMeninggal(data),
+                        backgroundColor: 'rgba(255, 99, 132, 1)',
+                        borderColor: 'rgb(0, 255, 55)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }],
+                        xAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+        var app = angular.module('app', []);
+
+        const baseURL = 'https://apicovid19indonesia-v2.vercel.app/api';
+
+        var dataProvinsi;
+
+        app.controller('tableAPI', function ($scope, $rootScope, $http) {
+            $http.get(baseURL).then(
+                function (result) {
+                    console.log(result.data.endpoints[3]);
+                    const provinsiURL = result.data.endpoints[3];
+
+                    $http.get(provinsiURL).then(
+                        function (provinsi) {
+                            // console.log(harian.data);
+                            dataProvinsi = provinsi.data;
+                            console.log(dataProvinsi);
+                            $rootScope.harian = dataProvinsi;
+                            $scope.harian = dataProvinsi;
+
+                            let a = topProvinsi(dataProvinsi, 5);
+                            // console.log(topProvinsi(dataProvinsi, 5));
+                            console.log(a);
+                            console.log(parserLabel(a));
+                            console.log(parserMeninggal(a));
+
+                            invokeChart(a);
+                        },
+                        function (err) {
+                            console.log(err);
+                        }
+                    )
+                },
+                function (error) {
+                    console.log(error);
+                });
+        });
+
+        function topProvinsi(provinsiArr, jml){
+            let provinsiArrSort = new Object(JSON.parse(JSON.stringify(provinsiArr)));  // Perform Deep Copy
+            let topFive = [];
+            
+            for (i=0; i < jml; i++){
+                temp = 0;
+                idx = 0;
+                for (j=0; j < provinsiArrSort.length; j++){
+                    if (temp < provinsiArrSort[j].meninggal){
+                        temp = provinsiArrSort[j].meninggal;
+                        idx = j;
+                    }
+                }
+                topFive.push(provinsiArr[idx]);
+                provinsiArrSort[idx].meninggal = 0;
+            }
+            // console.log(topFive)
+            return topFive;
+        }
+
+        function parserLabel(topProvinsi){
+            let newLabel = [];
+            topProvinsi.forEach(provinsi => {
+                newLabel.push(provinsi.provinsi);
+            });
+            return newLabel;
+        }
+
+        function parserMeninggal(topProvinsi){
+            let newLabel = [];
+            // console.log(topProvinsi);
+            topProvinsi.forEach(provinsi => {
+                newLabel.push(provinsi.meninggal);
+            });
+            return newLabel;
+        }
+
+        // function number() {
+        //     return [2, 3, 2, 5, 6];
+        // }
+        // $('#num').html = 'Testing';
+        // $('#num').html(number());;
+    </script>
+</body>
+
+</html>

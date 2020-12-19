@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Cards</title>
+    <meta charset="UTF-8">
+
+    <!-- Boostrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Boostrap Js -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+    </script>
+
+    <!-- Angular JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"
+        integrity="sha512-7oYXeK0OxTFxndh0erL8FsjGvrl2VMDor6fVqzlLGfwOQQqTbYsGPv4ZZ15QHfSk80doyaM0ZJdvkyDcVO7KFA=="
+        crossorigin="anonymous"></script>
+
+</head>
+
+<style>
+    body
+
+    /*fungsi animasi*/
+        {
+        background: linear-gradient(50deg, #ff3f3f, #0f0f0f);
+        background-size: 1000% 1000%;
+
+        animation: animasibg 3s ease infinite;
+        display: grid;
+        place-items: center;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-style: bold;
+        color: #1b1b1b;
+    }
+
+    @keyframes animasibg {
+        0% {
+            background-position: 0% 87%
+        }
+
+        50% {
+            background-position: 100% 14%
+        }
+
+        100% {
+            background-position: 0% 87%
+        }
+    }
+
+    card {}
+</style>
+
+<body>
+    <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="index.html">COVID.API</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    <br><br><br><br>
+
+    <center>
+        <h2 style="color: aliceblue;">Data yang diambil Diurutkan dari Kasus Tertinggi Hingga Kasus Terendah</h2>
+    </center>
+    <div ng-app='app' ng-controller="tableAPI">
+        <div class="row" style="padding: 10px;">
+            <div class="col-sm-4" ng-repeat='data in provinsi' style="padding-bottom: 10px">
+                <div class="card">
+                    <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{data.provinsi}}</h5>
+                            <p class="card-text">
+                             <p>Kasus Covid-19 yang ada: {{data.kasus}}</p>
+                             <p>Jumplah Pasien yang Sedang Dirawat: {{data.dirawat}}</p>
+                             <p>Jumlah pasien Sembuh: {{data.sembuh}}</p>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</body>
+
+<script>
+    // Fetch Data from API
+
+    var app = angular.module('app', []);
+
+    const baseURL = 'https://apicovid19indonesia-v2.vercel.app/api';
+
+    var dataProvinsi;
+
+    app.controller('tableAPI', function ($scope, $rootScope, $http) {
+        $http.get(baseURL).then(
+            function (result) {
+                console.log(result);
+                console.log(result.data.endpoints[4]);
+                const provinsiURL = result.data.endpoints[4];
+
+                $http.get(provinsiURL).then(
+                    function (provinsi) {
+                        // console.log(provinsi.data);
+                        dataProvinsi = provinsi.data;
+                        console.log(dataProvinsi);
+                        $rootScope.provinsi = dataProvinsi;
+                        $scope.provinsi = dataProvinsi;
+                    },
+                    function (err) {
+                        console.log(err);
+                    }
+                )
+            },
+            function (error) {
+                console.log(error);
+            });
+        // $scope.
+    });
+</script>
+
+</html>
